@@ -1,9 +1,7 @@
 "use client"
 
-import { Phone, Mail, MapPin, Globe, Instagram, Facebook, Clock, Calendar } from "lucide-react"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import Link from "next/link"
+import { Phone, Mail, CheckCircle2, MapPin, Globe, Instagram, Facebook } from "lucide-react"
+import { motion } from "framer-motion"
 
 interface Business {
   businessName: string
@@ -11,193 +9,89 @@ interface Business {
   phone?: string
   email?: string
   address?: string
-  whatsapp?: string
   socialLinks?: {
     instagram?: string
     facebook?: string
     website?: string
   }
-  createdAt?: string | Date
-  category?: string
 }
 
 interface BusinessAboutSectionProps {
   business: Business
-  productCount?: number
+  productCount: number
 }
 
-export function BusinessAboutSection({ business, productCount = 0 }: BusinessAboutSectionProps) {
-  const memberSince = business.createdAt 
-    ? new Date(business.createdAt).getFullYear() 
-    : new Date().getFullYear()
-
-  const contactItems = [
-    {
-      icon: Phone,
-      label: "Phone",
-      value: business.phone,
-      href: business.phone ? `tel:${business.phone}` : undefined,
-    },
-    {
-      icon: Mail,
-      label: "Email",
-      value: business.email,
-      href: business.email ? `mailto:${business.email}` : undefined,
-    },
-    {
-      icon: MapPin,
-      label: "Address",
-      value: business.address,
-      href: business.address 
-        ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}`
-        : undefined,
-    },
-  ]
-
-  const socialItems = [
-    {
-      icon: Instagram,
-      label: "Instagram",
-      value: business.socialLinks?.instagram,
-      color: "text-pink-600",
-    },
-    {
-      icon: Facebook,
-      label: "Facebook",
-      value: business.socialLinks?.facebook,
-      color: "text-blue-600",
-    },
-    {
-      icon: Globe,
-      label: "Website",
-      value: business.socialLinks?.website,
-      color: "text-gray-600",
-    },
-  ].filter((item) => item.value)
-
+export function BusinessAboutSection({ business, productCount }: BusinessAboutSectionProps) {
   return (
-    <div className="space-y-6">
-      {/* About Section */}
-      <Card className="p-6 space-y-4">
-        <h2 className="text-xl font-bold">About This Business</h2>
+    <section className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-slate-100 overflow-hidden relative">
+      {/* Subtle Background Accent */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-full -mr-16 -mt-16 blur-3xl opacity-50" />
+      
+      <div className="max-w-3xl relative z-10">
+        <div className="space-y-2 mb-8">
+           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Our Story</span>
+           <h2 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight">About {business.businessName}</h2>
+        </div>
         
-        {business.description ? (
-          <p className="text-muted-foreground leading-relaxed">{business.description}</p>
-        ) : (
-          <p className="text-muted-foreground italic">
-            Welcome to {business.businessName}. Browse our collection of quality products.
-          </p>
-        )}
+        <p className="text-slate-500 leading-relaxed mb-12 text-base md:text-lg font-medium">
+          {business.description || `Welcome to ${business.businessName}. We are dedicated to providing the best automotive experience with a curated selection of premium vehicles and exceptional customer service.`}
+        </p>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 pt-4 border-t">
-          <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <div className="text-2xl font-bold text-primary">{productCount}</div>
-            <div className="text-xs text-muted-foreground">Products Listed</div>
-          </div>
-          <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <div className="text-2xl font-bold text-primary">{memberSince}</div>
-            <div className="text-xs text-muted-foreground">Member Since</div>
-          </div>
-          {business.category && (
-            <div className="text-center p-3 bg-gray-50 rounded-lg col-span-2 md:col-span-1">
-              <div className="text-sm font-semibold text-primary truncate">{business.category}</div>
-              <div className="text-xs text-muted-foreground">Category</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {business.phone && (
+            <div className="flex items-center gap-4 group p-4 rounded-2xl bg-slate-50 border border-transparent hover:border-slate-100 transition-all duration-300">
+              <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-slate-600 shadow-sm transition-transform group-hover:scale-105">
+                <Phone className="h-5 w-5" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Phone</span>
+                <span className="text-base font-bold text-slate-900">{business.phone}</span>
+              </div>
             </div>
           )}
-        </div>
-      </Card>
 
-      {/* Contact Information */}
-      <Card className="p-6 space-y-4">
-        <h3 className="font-semibold text-lg">Contact Information</h3>
-        <div className="space-y-3">
-          {contactItems.map((item) => {
-            if (!item.value) return null
-
-            const Icon = item.icon
-            const content = (
-              <div className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                <Icon className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs text-muted-foreground">{item.label}</div>
-                  <div className="text-sm font-medium break-words">{item.value}</div>
-                </div>
+          {business.email && (
+            <div className="flex items-center gap-4 group p-4 rounded-2xl bg-slate-50 border border-transparent hover:border-slate-100 transition-all duration-300">
+              <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-slate-600 shadow-sm transition-transform group-hover:scale-105">
+                <Mail className="h-5 w-5" />
               </div>
-            )
+              <div className="flex flex-col">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Email</span>
+                <span className="text-base font-bold text-slate-900 transition-colors group-hover:text-blue-600">{business.email}</span>
+              </div>
+            </div>
+          )}
 
-            return item.href ? (
-              <Link
-                key={item.label}
-                href={item.href}
-                target={item.label === "Address" ? "_blank" : undefined}
-                className="block"
-              >
-                {content}
-              </Link>
-            ) : (
-              <div key={item.label}>{content}</div>
-            )
-          })}
-        </div>
-      </Card>
-
-      {/* Social Media Links */}
-      {socialItems.length > 0 && (
-        <Card className="p-6 space-y-4">
-          <h3 className="font-semibold text-lg">Follow Us</h3>
-          <div className="flex flex-wrap gap-3">
-            {socialItems.map((item) => {
-              const Icon = item.icon
-              return (
-                <Link
-                  key={item.label}
-                  href={item.value!}
-                  target="_blank"
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <Icon className={`h-5 w-5 ${item.color}`} />
-                  <span className="text-sm font-medium">{item.label}</span>
-                </Link>
-              )
-            })}
-          </div>
-        </Card>
-      )}
-
-      {/* Trust Indicators */}
-      <Card className="p-6 space-y-4 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
-        <h3 className="font-semibold text-lg">Why Choose Us?</h3>
-        <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
-              <Badge variant="secondary" className="w-2 h-2 rounded-full bg-green-500 p-0" />
+          <div className="flex items-center gap-4 group p-4 rounded-2xl bg-green-50/30 border border-green-50 hover:bg-green-50 transition-all duration-300">
+            <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-green-600 shadow-sm transition-transform group-hover:scale-105">
+              <CheckCircle2 className="h-5 w-5" />
             </div>
-            <div>
-              <div className="font-medium text-sm">Verified Seller</div>
-              <div className="text-xs text-muted-foreground">Trusted by customers</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
-              <Calendar className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <div className="font-medium text-sm">Established {memberSince}</div>
-              <div className="text-xs text-muted-foreground">Years of experience</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
-              <Phone className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <div className="font-medium text-sm">Quick Response</div>
-              <div className="text-xs text-muted-foreground">Available via call & WhatsApp</div>
+            <div className="flex flex-col">
+                <span className="text-[10px] font-bold text-green-500 uppercase tracking-widest text-opacity-70">Status</span>
+                <span className="text-base font-bold text-slate-900">Certified Dealer</span>
             </div>
           </div>
         </div>
-      </Card>
-    </div>
+
+        {/* Social Links Row */}
+        <div className="flex items-center gap-4 mt-12 pt-8 border-t border-slate-50">
+           {business.socialLinks?.instagram && (
+             <a href={business.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:text-[#E4405F] hover:bg-[#E4405F]/5 transition-all duration-300">
+               <Instagram className="h-5 w-5" />
+             </a>
+           )}
+           {business.socialLinks?.facebook && (
+             <a href={business.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:text-[#1877F2] hover:bg-[#1877F2]/5 transition-all duration-300">
+               <Facebook className="h-5 w-5" />
+             </a>
+           )}
+           {business.socialLinks?.website && (
+             <a href={business.socialLinks.website} target="_blank" rel="noopener noreferrer" className="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-all duration-300">
+               <Globe className="h-5 w-5" />
+             </a>
+           )}
+        </div>
+      </div>
+    </section>
   )
 }

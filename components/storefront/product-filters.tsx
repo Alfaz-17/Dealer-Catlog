@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
 
 export interface FilterState {
   categories: string[]
@@ -60,29 +61,27 @@ export function ProductFilters({
     selectedCategories.length > 0 || minPrice || maxPrice || sortBy !== "newest"
 
   const FilterContent = () => (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between pb-4 border-b border-slate-50">
+        <div className="flex items-center gap-3 text-slate-900">
           <SlidersHorizontal className="h-5 w-5" />
-          <h3 className="font-semibold text-lg">Filters</h3>
+          <h3 className="font-extrabold text-xl tracking-tight">Filters</h3>
         </div>
         {hasActiveFilters && (
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
             onClick={clearAllFilters}
-            className="text-xs"
+            className="text-xs font-bold text-red-600 hover:text-red-700 transition-colors uppercase tracking-widest"
           >
             Clear All
-          </Button>
+          </button>
         )}
       </div>
 
       {/* Sort By */}
-      <div className="space-y-3">
-        <Label className="text-sm font-semibold">Sort By</Label>
-        <div className="space-y-2">
+      <div className="space-y-4">
+        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Sort By</Label>
+        <div className="grid grid-cols-1 gap-2">
           {[
             { value: "newest" as const, label: "Newest First" },
             { value: "price-low" as const, label: "Price: Low to High" },
@@ -90,17 +89,25 @@ export function ProductFilters({
           ].map((option) => (
             <label
               key={option.value}
-              className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
+              className={cn(
+                "flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer group",
+                sortBy === option.value 
+                  ? "bg-slate-900 border-slate-900 text-white shadow-lg shadow-slate-200" 
+                  : "bg-white border-slate-100 text-slate-600 hover:bg-slate-50"
+              )}
             >
+              <span className="text-sm font-bold">{option.label}</span>
               <input
                 type="radio"
                 name="sortBy"
                 value={option.value}
                 checked={sortBy === option.value}
                 onChange={(e) => setSortBy(e.target.value as FilterState["sortBy"])}
-                className="cursor-pointer"
+                className="sr-only"
               />
-              <span className="text-sm">{option.label}</span>
+              {sortBy === option.value && (
+                <div className="w-2 h-2 rounded-full bg-white" />
+              )}
             </label>
           ))}
         </div>
@@ -108,94 +115,59 @@ export function ProductFilters({
 
       {/* Categories */}
       {categories.length > 0 && (
-        <div className="space-y-3">
-          <Label className="text-sm font-semibold">Categories</Label>
-          <div className="space-y-2 max-h-48 overflow-y-auto">
+        <div className="space-y-4">
+          <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Categories</Label>
+          <div className="flex flex-wrap gap-2">
             {categories.map((category) => (
-              <label
+              <button
                 key={category}
-                className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                onClick={() => toggleCategory(category)}
+                className={cn(
+                  "px-6 py-3 rounded-full text-xs font-bold transition-all border",
+                  selectedCategories.includes(category)
+                    ? "bg-slate-900 border-slate-900 text-white"
+                    : "bg-white border-slate-100 text-slate-500 hover:bg-slate-50"
+                )}
               >
-                <input
-                  type="checkbox"
-                  checked={selectedCategories.includes(category)}
-                  onChange={() => toggleCategory(category)}
-                  className="cursor-pointer"
-                />
-                <span className="text-sm">{category}</span>
-              </label>
+                {category}
+              </button>
             ))}
           </div>
         </div>
       )}
 
       {/* Price Range */}
-      <div className="space-y-3">
-        <Label className="text-sm font-semibold">Price Range</Label>
-        <div className="space-y-2">
-          <div>
-            <Label htmlFor="minPrice" className="text-xs text-muted-foreground">
-              Min Price
-            </Label>
-            <Input
-              id="minPrice"
-              type="number"
-              placeholder="₹ Min"
-              value={minPrice}
-              onChange={(e) => setMinPrice(e.target.value)}
-              className="mt-1"
-            />
+      <div className="space-y-4">
+        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Price Range</Label>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <span className="text-[10px] font-bold text-slate-400 uppercase ml-1">Min Price</span>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
+              <Input
+                type="number"
+                placeholder="0"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+                className="pl-8 h-12 bg-slate-50 border-none rounded-xl font-bold focus-visible:ring-1 focus-visible:ring-slate-200"
+              />
+            </div>
           </div>
-          <div>
-            <Label htmlFor="maxPrice" className="text-xs text-muted-foreground">
-              Max Price
-            </Label>
-            <Input
-              id="maxPrice"
-              type="number"
-              placeholder="₹ Max"
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(e.target.value)}
-              className="mt-1"
-            />
+          <div className="space-y-2">
+            <span className="text-[10px] font-bold text-slate-400 uppercase ml-1">Max Price</span>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
+              <Input
+                type="number"
+                placeholder="Any"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                className="pl-8 h-12 bg-slate-50 border-none rounded-xl font-bold focus-visible:ring-1 focus-visible:ring-slate-200"
+              />
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Active Filters Summary */}
-      {(selectedCategories.length > 0 || minPrice || maxPrice) && (
-        <div className="pt-3 border-t space-y-2">
-          <Label className="text-xs font-semibold text-muted-foreground">
-            Active Filters
-          </Label>
-          <div className="flex flex-wrap gap-2">
-            {selectedCategories.map((cat) => (
-              <Badge
-                key={cat}
-                variant="secondary"
-                className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
-                onClick={() => toggleCategory(cat)}
-              >
-                {cat}
-                <X className="ml-1 h-3 w-3" />
-              </Badge>
-            ))}
-            {(minPrice || maxPrice) && (
-              <Badge
-                variant="secondary"
-                className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
-                onClick={() => {
-                  setMinPrice("")
-                  setMaxPrice("")
-                }}
-              >
-                ₹{minPrice || "0"} - ₹{maxPrice || "∞"}
-                <X className="ml-1 h-3 w-3" />
-              </Badge>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   )
 

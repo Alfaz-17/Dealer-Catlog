@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ businessS
   await connectDB()
   const business = await Business.findOne({ slug: businessSlug })
     .select('businessName description banner logo')
-    .lean()
+    .lean() as any
 
   if (!business) {
     return { title: "Business Not Found" }
@@ -41,7 +41,7 @@ export default async function StorePage({ params }: { params: Promise<{ business
 
   const business = await Business.findOne({ slug: businessSlug })
     .select('_id businessName slug logo banner description phone whatsapp email address category brandColor socialLinks createdAt')
-    .lean()
+    .lean() as any
 
   if (!business) {
     notFound()
@@ -53,8 +53,8 @@ export default async function StorePage({ params }: { params: Promise<{ business
   })
     .select('_id name price category images status createdAt')
     .sort({ createdAt: -1 })
-    .limit(50) // Pagination: show first 50 products
-    .lean()
+    .limit(50) 
+    .lean() as any[]
 
   const productCount = await Product.countDocuments({
     businessId: business._id,
@@ -64,17 +64,8 @@ export default async function StorePage({ params }: { params: Promise<{ business
   const serializedBusiness = JSON.parse(JSON.stringify(business))
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <StorefrontNavbar 
-        business={{
-          businessName: serializedBusiness.businessName,
-          logo: serializedBusiness.logo,
-          slug: serializedBusiness.slug,
-          whatsapp: serializedBusiness.whatsapp,
-          brandColor: serializedBusiness.brandColor,
-        }}
-      />
-      
+    <div className="min-h-screen bg-background">
+      {/* Store Identity & Header */}
       <StoreHeader 
         business={serializedBusiness} 
         productCount={productCount}
@@ -89,7 +80,7 @@ export default async function StorePage({ params }: { params: Promise<{ business
       />
 
       {/* About Section */}
-      <div className="max-w-7xl mx-auto px-4 py-12 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 py-12 bg-background/50">
         <BusinessAboutSection 
           business={serializedBusiness}
           productCount={productCount}
